@@ -112,8 +112,6 @@ void sudoku::calculate_step()
     
 }
 
-void ks();
-
 void sudoku::calculate_work(cell** work)
 /* 
 Тут самое сложное - нужно сформировать группы из нескольких чисел. Сначала из двух, потом
@@ -124,23 +122,62 @@ void sudoku::calculate_work(cell** work)
 {
 cell* workgroup[9];
 u8 exp_group[9];
+u8 group_size=2; // начинаем с workgroup = 2
+
 auto clean = [&exp_group, &workgroup](void)  { // cleans existing workgroup and its expected numbers
     for (int i=0;i<9;++i)
         exp_group[i]=0; 
     for (auto wc:workgroup)
         wc=nullptr;
 };
-auto add_to_wg = [&workgroup](void)   {
+
+auto generate_mask = [](u8 count) -> unsigned long
+{
+    u8 i = 0; // нулевой бит будет первым
+    unsigned long mask = 0;
+    do 
+        mask += 1<<i++;
+    while (i<count);
+    return mask;
+};
+
+// TODO: make faster iteration
+auto iterate_mask = [group_size](unsigned long& mask) -> bool
+{
+    auto count_bits = [](unsigned long mask) -> u8
+    {
+        u8 cnt = 0;
+        for (int i = 0; i < 9; ++i)
+            cnt += ((mask>>i) & 1);
+        return cnt;
+    };
+
+    do 
+    {
+        ++mask;
+    }
+    while (count_bits(mask)!=group_size);
+    if (mask>1<<9)
+        return false;
+    return true;
+};
+
+auto generate_wg_from_mask = [&workgroup](unsigned long& mask){
     
 };
 
-u8 group_size=2; // начинаем с workgroup = 2
 do 
 {
     // сначала формируем необходимого размера workgroup. На каждой итерации их 
     // будет по количеству сочетаний из 9 по group_size (всего до 501 за весь while)
+    auto mask = generate_mask(group_size);
+    do
+    {
+        cout << mask << " ";
+    } while (iterate_mask(mask));
+    cout << endl;
+    // чистим 
     clean();
-
 } 
 while (++group_size<8); // заканчиваем на workgroup равном 8
 
