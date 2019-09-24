@@ -6,11 +6,14 @@ int main()
     using namespace std;
     sudoku S;
 
-    S.load_file("input.txt");
-     S.print();
-     S.print_exp_sums();
-    // cout << S.get_progress() << endl;
-    S.calculate_step();
+    //S.load_file("input.txt");
+    S.load_file("input2.txt");
+    S.print();
+    for (u8 i=0;i<9;++i)
+    {
+        S.calculate_step();
+    }
+    S.print();
 
 
     system("pause");

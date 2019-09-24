@@ -1,8 +1,10 @@
 #include "sudoku.h"
+#include "workgroup.h"
 #include <iostream>
 #include <fstream>
 
 using namespace std;
+
 
 sudoku::sudoku() : progress(0.f)
 {
@@ -42,6 +44,7 @@ void sudoku::load_file(const char* file_name)
         add_num(row,col,num);
     }
     file.close();
+    recalculate_progress();
 }
 
 void sudoku::print()
@@ -75,31 +78,33 @@ float sudoku::get_progress()
     return progress;
 }
 
+
 void sudoku::calculate_all()
 {
- 0;
+while (calculate_step());
 }
 
-void sudoku::calculate_step()
+bool sudoku::calculate_step()
 {
     cell* work[9];
+    bool change_flag = false;
 
     // заполним таблицу указателями на клетки одной строки
-    int i=0,j=-1;
+    int i,j;
 
     for (i=0;i<9;++i)
     {
-        for (cell& cl:grid[i])
-            work[j++] = &cl;
-        calculate_work(work);
+        for (j=0;j<9;++j)
+            work[j] = &grid[i][j];
+        change_flag = change_flag || calculate_work(work);
     }
 
     // // заполним таблицу указателями на клетки одного столбца
-    for (cell* cl:grid)
+    for (j=0;j<9;++j)
     {
         for (i=0;i<9;++i)
-            work[i] = &cl[i];
-        calculate_work(work);
+            work[i] = &grid[i][j];
+        change_flag = change_flag || calculate_work(work);
     }
 
     // // заполним таблицу указателями на клетки одного квадрата
@@ -107,43 +112,47 @@ void sudoku::calculate_step()
     {
         for (j=0;j<9;j++)
             work[j] = &grid[i/3*3 + j/3][i%3*3 + j%3];
-        calculate_work(work);
+        change_flag = change_flag || calculate_work(work);
     }
+    recalculate_progress();
+
+    for (u8 i=0;i<9;++i)
+        for (u8 j=0;j<9;++j)
+            if(+grid[i][j] == 1)
+            {
+                for (u8 k=0;k<9;++k)
+                    if (grid[i][j].exp[k])
+                        grid[i][j]=k+1;
+                recalculate_exp(i,j,grid[i][j].num);
+            }
     
+    return change_flag;
 }
 
-void ks();
-
-void sudoku::calculate_work(cell** work)
 /* 
 Тут самое сложное - нужно сформировать группы из нескольких чисел. Сначала из двух, потом
 из трёх, заканчивая восьмью. В таких группах будут некоторые возможные числа exp, которые
 сформируют коллекцию из возможных чисел. Если размер exp коллекции не превысит размер группы,
 то в остальных числах из группы нужно будет удалить exp числа коллекции. 
 */
+bool sudoku::calculate_work(cell** work)
 {
-cell* workgroup[9];
-u8 exp_group[9];
-auto clean = [&exp_group, &workgroup](void)  { // cleans existing workgroup and its expected numbers
-    for (int i=0;i<9;++i)
-        exp_group[i]=0; 
-    for (auto wc:workgroup)
-        wc=nullptr;
-};
-auto add_to_wg = [&workgroup](void)   {
-    
-};
-
-u8 group_size=2; // начинаем с workgroup = 2
-do 
-{
-    // сначала формируем необходимого размера workgroup. На каждой итерации их 
-    // будет по количеству сочетаний из 9 по group_size (всего до 501 за весь while)
-    clean();
-
-} 
-while (++group_size<8); // заканчиваем на workgroup равном 8
-
+    bool change_flag = false; // false by default
+    u8 group_size = 2; // начинаем с workgroup = 2
+    do 
+    {
+        // сначала формируем необходимого размера workgroup. На каждой итерации их 
+        // будет по количеству сочетаний из 9 по group_size (всего до 501 за весь while)
+        workgroup w(work, group_size); // создаём workgroup с нужным количеством элементов
+        do
+        {
+            if (w.is_empty())
+                change_flag = change_flag || w.calculate_wg(); // if something changes 
+        } while (w.iterate_mask());
+        
+    } 
+    while (++group_size<8); // заканчиваем на workgroup равном 8
+    return change_flag; // whether anything was changed
 }
 
 void sudoku::add_num(u8 r,u8 c,u8 n)

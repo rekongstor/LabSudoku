@@ -1,3 +1,4 @@
+#pragma once
 using u8 = unsigned char;
 
 struct cell
@@ -11,4 +12,5 @@ struct cell
     u8 operator+(); // returns sum of exp 
     u8 operator*(); // returns num
     void operator^=(const u8&); // excludes num from exp
+    void exclude_expgr(u8* exp_group); // deletes expectations from cell
 };

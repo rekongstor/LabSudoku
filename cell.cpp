@@ -43,3 +43,11 @@ void cell::operator^=(const u8& n)
 {
     exp[n] = 0;
 }
+
+void cell::exclude_expgr(u8* _exp)
+{
+    for (u8 i=0;i<9;++i)
+    {
+        exp[i] *= (static_cast<u8>(1)-_exp[i]);
+    }
+}

@@ -7,7 +7,7 @@
             "label": "msvc build",
             "type": "shell",
             "command": "cl.exe",
-            "args": ["/EHsc", "/Od", "/Zi", "/Fe:", "sudoku.exe", "sudoku.cpp", "main.cpp", "console.cpp", "cell.cpp"],
+            "args": ["/EHsc", "/Od", "/Zi", "/Fe:", "sudoku.exe", "*.cpp"],
             "group": {
                 "kind": "build",
                 "isDefault": true
