@@ -19,6 +19,6 @@ public:
     workgroup(cell** work, u8 group_size);
     bool iterate_mask();
     bool is_empty();
-    void calculate_wg();
+    bool calculate_wg();
     void print_mask();
 };

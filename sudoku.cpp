@@ -5,6 +5,7 @@
 
 using namespace std;
 
+
 sudoku::sudoku() : progress(0.f)
 {
     clear();
@@ -43,6 +44,7 @@ void sudoku::load_file(const char* file_name)
         add_num(row,col,num);
     }
     file.close();
+    recalculate_progress();
 }
 
 void sudoku::print()
@@ -76,14 +78,16 @@ float sudoku::get_progress()
     return progress;
 }
 
+
 void sudoku::calculate_all()
 {
- 0;
+while (calculate_step());
 }
 
-void sudoku::calculate_step()
+bool sudoku::calculate_step()
 {
     cell* work[9];
+    bool change_flag = false;
 
     // заполним таблицу указателями на клетки одной строки
     int i,j;
@@ -92,7 +96,7 @@ void sudoku::calculate_step()
     {
         for (j=0;j<9;++j)
             work[j] = &grid[i][j];
-        calculate_work(work);
+        change_flag = change_flag || calculate_work(work);
     }
 
     // // заполним таблицу указателями на клетки одного столбца
@@ -100,7 +104,7 @@ void sudoku::calculate_step()
     {
         for (i=0;i<9;++i)
             work[i] = &grid[i][j];
-        calculate_work(work);
+        change_flag = change_flag || calculate_work(work);
     }
 
     // // заполним таблицу указателями на клетки одного квадрата
@@ -108,9 +112,21 @@ void sudoku::calculate_step()
     {
         for (j=0;j<9;j++)
             work[j] = &grid[i/3*3 + j/3][i%3*3 + j%3];
-        calculate_work(work);
+        change_flag = change_flag || calculate_work(work);
     }
+    recalculate_progress();
+
+    for (u8 i=0;i<9;++i)
+        for (u8 j=0;j<9;++j)
+            if(+grid[i][j] == 1)
+            {
+                for (u8 k=0;k<9;++k)
+                    if (grid[i][j].exp[k])
+                        grid[i][j]=k+1;
+                recalculate_exp(i,j,grid[i][j].num);
+            }
     
+    return change_flag;
 }
 
 /* 
@@ -119,8 +135,9 @@ void sudoku::calculate_step()
 сформируют коллекцию из возможных чисел. Если размер exp коллекции не превысит размер группы,
 то в остальных числах из группы нужно будет удалить exp числа коллекции. 
 */
-void sudoku::calculate_work(cell** work)
+bool sudoku::calculate_work(cell** work)
 {
+    bool change_flag = false; // false by default
     u8 group_size = 2; // начинаем с workgroup = 2
     do 
     {
@@ -130,11 +147,12 @@ void sudoku::calculate_work(cell** work)
         do
         {
             if (w.is_empty())
-                w.calculate_wg();
+                change_flag = change_flag || w.calculate_wg(); // if something changes 
         } while (w.iterate_mask());
         
     } 
     while (++group_size<8); // заканчиваем на workgroup равном 8
+    return change_flag; // whether anything was changed
 }
 
 void sudoku::add_num(u8 r,u8 c,u8 n)

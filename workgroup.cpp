@@ -79,18 +79,21 @@ void workgroup::generate_wg_from_mask()
     }
 }
 
-void workgroup::calculate_wg()
+bool workgroup::calculate_wg()
 {
+    bool change_flag = false;
     u8 exsum = get_exp_sum();
     u8 vsum = get_val_sum();
     if (exsum<=group_size && exsum+vsum<9)
     {
+        change_flag = true;
         for (u8 i=0;i<9;++i)
         {
             if (!((mask>>i)&1))
                 work[i]->exclude_expgr(exp_group);
         }
     }
+    return change_flag;
 }
 
 u8 workgroup::get_exp_sum()

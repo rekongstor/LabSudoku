@@ -19,11 +19,11 @@ public:
 
     float get_progress(); 
     void calculate_all();   
-    void calculate_step();
+    bool calculate_step();
 
 private:
     void add_num(u8 row, u8 column, u8 num);
     void recalculate_exp(u8 row, u8 column, u8 num);
     void recalculate_progress();
-    void calculate_work(cell** work);
+    bool calculate_work(cell** work);
 };
