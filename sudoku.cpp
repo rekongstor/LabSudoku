@@ -1,4 +1,5 @@
 #include "sudoku.h"
+#include "workgroup.h"
 #include <iostream>
 #include <fstream>
 
@@ -85,20 +86,20 @@ void sudoku::calculate_step()
     cell* work[9];
 
     // заполним таблицу указателями на клетки одной строки
-    int i=0,j=-1;
+    int i,j;
 
     for (i=0;i<9;++i)
     {
-        for (cell& cl:grid[i])
-            work[j++] = &cl;
+        for (j=0;j<9;++j)
+            work[j] = &grid[i][j];
         calculate_work(work);
     }
 
     // // заполним таблицу указателями на клетки одного столбца
-    for (cell* cl:grid)
+    for (j=0;j<9;++j)
     {
         for (i=0;i<9;++i)
-            work[i] = &cl[i];
+            work[i] = &grid[i][j];
         calculate_work(work);
     }
 
@@ -112,75 +113,24 @@ void sudoku::calculate_step()
     
 }
 
-void sudoku::calculate_work(cell** work)
 /* 
 Тут самое сложное - нужно сформировать группы из нескольких чисел. Сначала из двух, потом
 из трёх, заканчивая восьмью. В таких группах будут некоторые возможные числа exp, которые
 сформируют коллекцию из возможных чисел. Если размер exp коллекции не превысит размер группы,
 то в остальных числах из группы нужно будет удалить exp числа коллекции. 
 */
+void sudoku::calculate_work(cell** work)
 {
-cell* workgroup[9];
-u8 exp_group[9];
-u8 group_size=2; // начинаем с workgroup = 2
-
-auto clean = [&exp_group, &workgroup](void)  { // cleans existing workgroup and its expected numbers
-    for (int i=0;i<9;++i)
-        exp_group[i]=0; 
-    for (auto wc:workgroup)
-        wc=nullptr;
-};
-
-auto generate_mask = [](u8 count) -> unsigned long
-{
-    u8 i = 0; // нулевой бит будет первым
-    unsigned long mask = 0;
-    do 
-        mask += 1<<i++;
-    while (i<count);
-    return mask;
-};
-
-// TODO: make faster iteration
-auto iterate_mask = [group_size](unsigned long& mask) -> bool
-{
-    auto count_bits = [](unsigned long mask) -> u8
-    {
-        u8 cnt = 0;
-        for (int i = 0; i < 9; ++i)
-            cnt += ((mask>>i) & 1);
-        return cnt;
-    };
-
+    u8 group_size = 2; // начинаем с workgroup = 2
     do 
     {
-        ++mask;
-    }
-    while (count_bits(mask)!=group_size);
-    if (mask>1<<9)
-        return false;
-    return true;
-};
-
-auto generate_wg_from_mask = [&workgroup](unsigned long& mask){
-    
-};
-
-do 
-{
-    // сначала формируем необходимого размера workgroup. На каждой итерации их 
-    // будет по количеству сочетаний из 9 по group_size (всего до 501 за весь while)
-    auto mask = generate_mask(group_size);
-    do
-    {
-        cout << mask << " ";
-    } while (iterate_mask(mask));
-    cout << endl;
-    // чистим 
-    clean();
-} 
-while (++group_size<8); // заканчиваем на workgroup равном 8
-
+        cout << (int)group_size << endl;
+        // сначала формируем необходимого размера workgroup. На каждой итерации их 
+        // будет по количеству сочетаний из 9 по group_size (всего до 501 за весь while)
+        workgroup w(work, group_size); // создаём workgroup с нужным количеством элементов
+        w.print_mask();
+    } 
+    while (++group_size<8); // заканчиваем на workgroup равном 8
 }
 
 void sudoku::add_num(u8 r,u8 c,u8 n)
