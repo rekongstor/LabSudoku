@@ -37,5 +37,5 @@
         "algorithm": "cpp",
         "fstream": "cpp"
     },
-    "editor.fontFamily": "Consolas, 'Courier New', monospace"
+    "editor.fontFamily": "'Fira Code', 'Courier New', monospace"
 }

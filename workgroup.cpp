@@ -90,7 +90,7 @@ bool workgroup::calculate_wg()
         for (u8 i=0;i<9;++i)
         {
             if (!((mask>>i)&1))
-                work[i]->exclude_expgr(exp_group);
+                *work[i]-exp_group;
         }
     }
     return change_flag;
