@@ -124,11 +124,15 @@ void sudoku::calculate_work(cell** work)
     u8 group_size = 2; // начинаем с workgroup = 2
     do 
     {
-        cout << (int)group_size << endl;
         // сначала формируем необходимого размера workgroup. На каждой итерации их 
         // будет по количеству сочетаний из 9 по group_size (всего до 501 за весь while)
         workgroup w(work, group_size); // создаём workgroup с нужным количеством элементов
-        w.print_mask();
+        do
+        {
+            if (w.is_empty())
+                w.calculate_wg();
+        } while (w.iterate_mask());
+        
     } 
     while (++group_size<8); // заканчиваем на workgroup равном 8
 }

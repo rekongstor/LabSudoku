@@ -51,6 +51,12 @@ bool workgroup::iterate_mask()
 
     generate_wg_from_mask(); // regenerate wg
 
+    for (u8 i=0;i<9;++i)
+        exp_group[i]=0;
+    for (u8 i=0;i<group_size;++i)
+        for (u8 j=0;j<9;++j)
+            exp_group[j] = exp_group[j] || wg[i]->exp[j];
+    
     if (mask>1<<9)
         return false;
     return true;
@@ -73,7 +79,48 @@ void workgroup::generate_wg_from_mask()
     }
 }
 
+void workgroup::calculate_wg()
+{
+    u8 exsum = get_exp_sum();
+    u8 vsum = get_val_sum();
+    if (exsum<=group_size && exsum+vsum<9)
+    {
+        for (u8 i=0;i<9;++i)
+        {
+            if (!((mask>>i)&1))
+                work[i]->exclude_expgr(exp_group);
+        }
+    }
+}
+
+u8 workgroup::get_exp_sum()
+{
+    u8 n=0;
+    for (u8 i:exp_group)
+        n += i;
+    return n;
+}
+
 void workgroup::print_mask()
 {
     std::cout << std::bitset<9>(mask) << std::endl;
+}
+
+bool workgroup::is_empty()
+{
+    for (u8 i=0;i<group_size;++i)
+        if (wg[i]->num)
+            return false;
+    return true;
+}
+
+u8 workgroup::get_val_sum()
+{
+    u8 v=0;
+    for (u8 i=0;i<9;++i)
+    {
+        if (work[i]->num)
+            ++v;
+    }
+    return v;
 }
