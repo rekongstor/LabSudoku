@@ -1,7 +1,8 @@
 #include <iostream>
 #include "sudoku.h"
 
-int main()
+
+int EntryPoint()
 {
     using namespace std;
     sudoku S;
