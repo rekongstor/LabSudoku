@@ -56,7 +56,6 @@ void sudoku::print()
             cout << static_cast<char>((*grid[i][j] == (u8)0) ? ('.') : ('0' + *grid[i][j])) << " ";
         cout << endl;
     }
-    cout << endl;
 }
 
 void sudoku::print_exp_sums()
