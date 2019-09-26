@@ -35,19 +35,19 @@ struct cell
     /**
      * @brief Sets a cell value
      * 
-     * @return cell& 
+     * @return cell& - reference to this cell
      */
     cell& operator=(const u8&);
     /**
      * @brief Returns a sum of exp[]
      * 
-     * @return u8 
+     * @return u8 sum
      */
     u8 operator+();
     /**
      * @brief Returns num 
      * 
-     * @return u8 
+     * @return u8 num
      */
     u8 operator*();
     /**
