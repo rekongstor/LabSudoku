@@ -8,12 +8,13 @@ int EntryPoint()
     sudoku S;
 
     //S.load_file("input.txt");
-    S.load_file("input2.txt");
+    S.load_file("input3.txt");
     S.print();
-    for (u8 i=0;i<9;++i)
-    {
-        S.calculate_step();
-    }
+    // for (u8 i=0;i<9;++i)
+    // {
+    //     S.calculate_step();
+    // }
+    S.calculate_all();
     S.print();
 
 
