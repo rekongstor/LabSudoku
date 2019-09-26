@@ -44,7 +44,7 @@ void cell::operator^=(const u8& n)
     exp[n] = 0;
 }
 
-void cell::operator-(u8* _exp)
+void cell::operator-(const u8* _exp)
 {
     for (u8 i=0;i<9;++i)
     {
