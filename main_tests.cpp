@@ -3,23 +3,52 @@
 #define BOOST_TEST_ALTERNATIVE_INIT_API
 #include <boost/test/included/unit_test.hpp> 
 
-bool is_negative(int i)
+#include "src/cell.h"
+#include "src/workgroup.h"
+
+
+BOOST_AUTO_TEST_CASE(Cell_Tests) 
 {
-	return i < 0;
+	cell c;
+	BOOST_TEST(*c==0); 
+	BOOST_TEST(+c==9); 
+	c^=0;
+	BOOST_TEST(+c==8);
+	c^=0;
+	BOOST_TEST(+c==8);
+	c^=1;
+	BOOST_TEST(+c==7);
+	u8 eg[] = {1,0,1,0,0,0,0,0,0};
+	c-eg;
+	BOOST_TEST(+c==6);
+	c=5;
+	BOOST_TEST(*c==5);
+	BOOST_TEST(+c==0);
 }
 
-BOOST_AUTO_TEST_CASE(first_test) 
+BOOST_AUTO_TEST_CASE(Workgroup_Tests)
 {
-	int i = 1;
-	BOOST_TEST(i); 
-	BOOST_TEST(i == 2); 
-}
-
-BOOST_AUTO_TEST_CASE(second_test)
-{
-	BOOST_TEST(is_negative(0));
-	BOOST_TEST(is_negative(1));
-	BOOST_TEST(is_negative(-1));
+	cell c[9];
+	c[5] = 1;
+	cell* cs[9];
+	for (u8 i=0;i<9;++i)
+		cs[i]=&c[i];
+	
+	workgroup wg(cs,(u8)5);
+	BOOST_TEST(wg.is_empty()==true);
+	BOOST_TEST(wg.iterate_mask()==true);
+	BOOST_TEST(wg.is_empty()==false);
+	BOOST_TEST(wg.calculate_wg()==false);
+	workgroup wg2(cs,(u8)8);
+	BOOST_TEST(wg2.iterate_mask()==true);
+	BOOST_TEST(wg2.iterate_mask()==true);
+	BOOST_TEST(wg2.iterate_mask()==true);
+	BOOST_TEST(wg2.iterate_mask()==true);
+	BOOST_TEST(wg2.iterate_mask()==true);
+	BOOST_TEST(wg2.iterate_mask()==true);
+	BOOST_TEST(wg2.iterate_mask()==true);
+	BOOST_TEST(wg2.iterate_mask()==true);
+	BOOST_TEST(wg2.iterate_mask()==false);
 }
 
 
