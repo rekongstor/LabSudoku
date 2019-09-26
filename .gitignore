@@ -2,5 +2,5 @@
 *.exe
 *.pdb
 *.ilk
-src\html\*
+src/html/*
 *.chm
