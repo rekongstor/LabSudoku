@@ -1,5 +1,6 @@
 #pragma once
 #include "cell.h"
+#include "exc.h"
 
 /**
  * @brief The main class which contains sudoku information and functions

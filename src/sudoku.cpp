@@ -1,5 +1,6 @@
 #include "sudoku.h"
 #include "workgroup.h"
+#include "exc.h"
 #include <iostream>
 #include <fstream>
 
@@ -90,7 +91,6 @@ bool sudoku::calculate_step()
 
     // заполним таблицу указателями на клетки одной строки
     int i,j;
-
     for (i=0;i<9;++i)
     {
         for (j=0;j<9;++j)
@@ -125,6 +125,7 @@ bool sudoku::calculate_step()
                 recalculate_exp(i,j,grid[i][j].num);
             }
     
+
     return change_flag;
 }
 
@@ -143,6 +144,13 @@ bool sudoku::calculate_work(cell** work)
         // сначала формируем необходимого размера workgroup. На каждой итерации их 
         // будет по количеству сочетаний из 9 по group_size (всего до 501 за весь while)
         workgroup w(work, group_size); // создаём workgroup с нужным количеством элементов
+        try {
+            w.issolvable();
+        }
+        catch (exc_notsolvable)
+        {
+            throw;
+        }
         do
         {
             if (w.is_empty())

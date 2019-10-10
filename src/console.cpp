@@ -1,6 +1,6 @@
 #include <iostream>
 #include "sudoku.h"
-
+#include "exc.h"
 
 int EntryPoint()
 {
@@ -15,9 +15,15 @@ int EntryPoint()
     // {
     //     S.calculate_step();
     // }
-    S.calculate_all();
-    cout << endl << "Solved sudoku" << endl;
-    S.print();
+    try {
+        S.calculate_all();
+        cout << endl << "Solved sudoku" << endl;
+        S.print();
+    }
+    catch (exc_notsolvable)
+    {
+        cout << "Sudoku can't be solved" << endl;
+    }
 
 
     system("pause");

@@ -54,4 +54,10 @@ public:
      * 
      */
     void print_mask();
+    
+    /**
+     * @brief Sudoku is solvable
+     * 
+     */
+    void issolvable();
 };

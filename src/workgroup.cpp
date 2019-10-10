@@ -2,6 +2,7 @@
 #include <bitset>
 #include "cell.h"
 #include "workgroup.h"
+#include "exc.h"
 
 workgroup::workgroup(cell** _work, u8 size)
 {
@@ -126,4 +127,15 @@ u8 workgroup::get_val_sum()
             ++v;
     }
     return v;
+}
+
+void workgroup::issolvable()
+{
+    int numbers[] = {0,0,0,0,0,0,0,0,0};
+    for (int i=0;i<9;++i)
+    {
+        if (work[i]->num !=0)
+            if (++(numbers[work[i]->num-1])>1)
+                throw exc_notsolvable{"Not solvable sudoku"};
+    }
 }
