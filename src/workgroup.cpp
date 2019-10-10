@@ -36,19 +36,46 @@ void workgroup::generate_mask()
 // TODO: make faster iteration
 bool workgroup::iterate_mask()
 {
-    auto count_bits = [](unsigned long mask) -> u8
-    {
-        u8 cnt = 0;
-        for (u8 i = 0; i < 9; ++i)
-            cnt += ((mask>>i) & 1);
-        return cnt;
-    };
+    // decode mask and fill bits
+    for (u8 i=0;i<10;++i)
+        bits[i] = (mask>>i) & 1;
 
-    do 
-    {
-        ++mask;
+    int k=9,gs=1;
+    while (bits[--k]==0);
+
+    while (bits[--k]==1)
+        ++gs;
+    k=0;
+
+    if (gs==group_size)
+    {   // step up
+        while (k<group_size-1)
+            bits[k++]=1;
+
+        while (bits[k]==0) ++k;
+
+        while (bits[k]==1)
+            bits[k++]=0;
+            
+        bits[k] = 1;
     }
-    while (count_bits(mask)!=group_size);
+    else
+    {
+        while (gs < group_size)
+            gs+=bits[k++];
+        
+        if (k<10)
+        {
+            bits[k-1]=0;
+            bits[k]=1;
+        }
+    }
+
+    mask = 0;
+    for (u8 i=0;i<10;++i)
+        mask+=bits[i]<<i;
+    
+
 
     generate_wg_from_mask(); // regenerate wg
 

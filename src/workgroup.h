@@ -13,6 +13,7 @@ class workgroup
     u8 exp_group[9];
     u8 group_size;
     unsigned long mask;
+    u8 bits[10];
 
     void generate_mask();
     void generate_wg_from_mask();
