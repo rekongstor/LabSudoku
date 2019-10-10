@@ -1,0 +1,3 @@
+[submodule "src-cs"]
+	path = src-cs
+	url = git://github.com/rekongstor/cuteseal.git
