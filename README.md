@@ -4,6 +4,10 @@ LabSudoku
 ### Details
 This is the sudoku solver for the ITMO IDE labs course.
 The code was written in C++ for msvc compiler.
+* Gitflow
+* GitLFS
+* Git Submodule
+* Boost Test
 
 ###
 Code style
