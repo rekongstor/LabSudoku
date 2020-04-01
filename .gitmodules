@@ -1,6 +1,0 @@
-[submodule "src-cs"]
-	path = src-cs
-	url = git://github.com/rekongstor/cuteseal.git
-[submodule "src-gensu"]
-	path = src-gensu
-	url = git://github.com/rekongstor/SudokuGenerator.git
